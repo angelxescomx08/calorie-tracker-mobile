@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { format } from 'date-fns'
+import { es } from 'date-fns/locale'
 import { Droplets, Minus, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -49,9 +50,9 @@ export function DashboardPage() {
 
   const greeting = () => {
     const hour = new Date().getHours()
-    if (hour < 12) return 'Good morning'
-    if (hour < 18) return 'Good afternoon'
-    return 'Good evening'
+    if (hour < 12) return 'Buenos días'
+    if (hour < 18) return 'Buenas tardes'
+    return 'Buenas noches'
   }
 
   return (
@@ -60,7 +61,9 @@ export function DashboardPage() {
         <h2 className="text-lg font-semibold">
           {greeting()}, {user?.name.split(' ')[0]}
         </h2>
-        <p className="text-sm text-muted-foreground">{format(new Date(), 'EEEE, MMMM d')}</p>
+        <p className="text-sm text-muted-foreground capitalize">
+          {format(new Date(), 'EEEE, d MMMM', { locale: es })}
+        </p>
       </div>
 
       {logLoading ? (
@@ -76,16 +79,16 @@ export function DashboardPage() {
       )}
 
       <div className="grid grid-cols-3 gap-2">
-        <MacroCard label="Protein" current={macros.protein} goal={goal ? 50 : 50} color="bg-blue-500" />
-        <MacroCard label="Carbs" current={macros.carbs} goal={goal ? Math.round(calorieGoal * 0.5 / 4) : 250} color="bg-yellow-500" />
-        <MacroCard label="Fat" current={macros.fat} goal={goal ? Math.round(calorieGoal * 0.3 / 9) : 65} color="bg-orange-500" />
+        <MacroCard label="Proteína" current={macros.protein} goal={goal ? 50 : 50} color="bg-blue-500" />
+        <MacroCard label="Carbos" current={macros.carbs} goal={goal ? Math.round(calorieGoal * 0.5 / 4) : 250} color="bg-yellow-500" />
+        <MacroCard label="Grasas" current={macros.fat} goal={goal ? Math.round(calorieGoal * 0.3 / 9) : 65} color="bg-orange-500" />
       </div>
 
       <Card>
         <CardContent className="flex items-center justify-between py-3">
           <div className="flex items-center gap-2">
             <Droplets className="size-4 text-blue-500" />
-            <span className="text-sm font-medium">Water</span>
+            <span className="text-sm font-medium">Agua</span>
           </div>
           <div className="flex items-center gap-3">
             <Button
@@ -113,9 +116,9 @@ export function DashboardPage() {
 
       <Card>
         <CardContent className="flex items-center justify-between py-3">
-          <span className="text-sm font-medium">Exercise</span>
+          <span className="text-sm font-medium">Ejercicio</span>
           <span className="text-sm font-semibold text-green-600">
-            {Math.round(exerciseCalories)} kcal burned
+            {Math.round(exerciseCalories)} kcal quemadas
           </span>
         </CardContent>
       </Card>

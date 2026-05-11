@@ -20,7 +20,7 @@ import { useActiveGoal, useCreateGoal, useUpdateGoal } from '@/presentation/hook
 
 const schema = z.object({
   goal_type: z.enum(['lose_weight', 'gain_weight', 'maintain']),
-  daily_calorie_target: z.coerce.number().min(500, 'Minimum 500 kcal'),
+  daily_calorie_target: z.coerce.number().min(500, 'Mínimo 500 kcal'),
   target_weight_kg: z.coerce.number().positive().optional().or(z.literal('')),
   weekly_rate_kg: z.coerce.number().positive().optional().or(z.literal('')),
   start_date: z.string().min(1),
@@ -28,9 +28,9 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>
 
 const GOAL_LABELS: Record<string, string> = {
-  lose_weight: 'Lose Weight',
-  gain_weight: 'Gain Weight',
-  maintain: 'Maintain Weight',
+  lose_weight: 'Perder peso',
+  gain_weight: 'Ganar peso',
+  maintain: 'Mantener peso',
 }
 
 export function GoalsPage() {
@@ -75,14 +75,14 @@ export function GoalsPage() {
       updateGoal.mutate(
         { id: goal.id, dto },
         {
-          onSuccess: () => toast.success('Goal updated'),
-          onError: () => toast.error('Failed to update goal'),
+          onSuccess: () => toast.success('Meta actualizada'),
+          onError: () => toast.error('No se pudo actualizar la meta'),
         },
       )
     } else {
       createGoal.mutate(dto, {
-        onSuccess: () => toast.success('Goal created'),
-        onError: () => toast.error('Failed to create goal'),
+        onSuccess: () => toast.success('Meta creada'),
+        onError: () => toast.error('No se pudo crear la meta'),
       })
     }
   }
@@ -100,8 +100,8 @@ export function GoalsPage() {
     <div className="flex flex-col">
       <div className="sticky top-0 z-10 bg-background/95 px-4 py-3 backdrop-blur">
         <div className="flex items-center gap-2">
-          <h2 className="text-lg font-semibold">Goal</h2>
-          {goal && <Badge variant="secondary">Active</Badge>}
+          <h2 className="text-lg font-semibold">Meta</h2>
+          {goal && <Badge variant="secondary">Activa</Badge>}
         </div>
       </div>
 
@@ -109,27 +109,27 @@ export function GoalsPage() {
         {goal && (
           <Card>
             <CardHeader className="pb-2 pt-3">
-              <CardTitle className="text-sm">Current Goal</CardTitle>
+              <CardTitle className="text-sm">Meta actual</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 gap-y-2 text-sm">
-                <span className="text-muted-foreground">Type</span>
+                <span className="text-muted-foreground">Tipo</span>
                 <span className="font-medium">{GOAL_LABELS[goal.goal_type]}</span>
-                <span className="text-muted-foreground">Daily Calories</span>
+                <span className="text-muted-foreground">Calorías diarias</span>
                 <span className="font-medium">{goal.daily_calorie_target} kcal</span>
                 {goal.target_weight_kg && (
                   <>
-                    <span className="text-muted-foreground">Target Weight</span>
+                    <span className="text-muted-foreground">Peso objetivo</span>
                     <span className="font-medium">{goal.target_weight_kg} kg</span>
                   </>
                 )}
                 {goal.weekly_rate_kg && (
                   <>
-                    <span className="text-muted-foreground">Weekly Rate</span>
-                    <span className="font-medium">{goal.weekly_rate_kg} kg/week</span>
+                    <span className="text-muted-foreground">Ritmo semanal</span>
+                    <span className="font-medium">{goal.weekly_rate_kg} kg/semana</span>
                   </>
                 )}
-                <span className="text-muted-foreground">Started</span>
+                <span className="text-muted-foreground">Inicio</span>
                 <span className="font-medium">{goal.start_date}</span>
               </div>
             </CardContent>
@@ -138,12 +138,12 @@ export function GoalsPage() {
 
         <Card>
           <CardHeader className="pb-2 pt-3">
-            <CardTitle className="text-sm">{goal ? 'Edit Goal' : 'Set a Goal'}</CardTitle>
+            <CardTitle className="text-sm">{goal ? 'Editar meta' : 'Establecer meta'}</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
               <div>
-                <Label className="text-xs">Goal Type</Label>
+                <Label className="text-xs">Tipo de meta</Label>
                 <Select
                   value={goalType}
                   onValueChange={(v) => setValue('goal_type', v as FormData['goal_type'])}
@@ -152,15 +152,15 @@ export function GoalsPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="lose_weight">Lose Weight</SelectItem>
-                    <SelectItem value="gain_weight">Gain Weight</SelectItem>
-                    <SelectItem value="maintain">Maintain Weight</SelectItem>
+                    <SelectItem value="lose_weight">Perder peso</SelectItem>
+                    <SelectItem value="gain_weight">Ganar peso</SelectItem>
+                    <SelectItem value="maintain">Mantener peso</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div>
-                <Label className="text-xs">Daily Calorie Target</Label>
+                <Label className="text-xs">Calorías diarias objetivo</Label>
                 <Input
                   type="number"
                   className="mt-1"
@@ -174,18 +174,18 @@ export function GoalsPage() {
               {goalType !== 'maintain' && (
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <Label className="text-xs">Target Weight (kg)</Label>
+                    <Label className="text-xs">Peso objetivo (kg)</Label>
                     <Input type="number" step="0.1" className="mt-1" {...register('target_weight_kg')} />
                   </div>
                   <div>
-                    <Label className="text-xs">Weekly Rate (kg)</Label>
+                    <Label className="text-xs">Ritmo semanal (kg)</Label>
                     <Input type="number" step="0.1" className="mt-1" {...register('weekly_rate_kg')} />
                   </div>
                 </div>
               )}
 
               <div>
-                <Label className="text-xs">Start Date</Label>
+                <Label className="text-xs">Fecha de inicio</Label>
                 <Input type="date" className="mt-1" {...register('start_date')} />
               </div>
 
@@ -194,10 +194,10 @@ export function GoalsPage() {
                 disabled={createGoal.isPending || updateGoal.isPending}
               >
                 {createGoal.isPending || updateGoal.isPending
-                  ? 'Saving...'
+                  ? 'Guardando...'
                   : goal
-                  ? 'Update Goal'
-                  : 'Set Goal'}
+                  ? 'Actualizar meta'
+                  : 'Establecer meta'}
               </Button>
             </form>
           </CardContent>

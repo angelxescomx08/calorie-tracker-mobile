@@ -13,10 +13,10 @@ import { DateNavigator } from '@/presentation/components/DateNavigator'
 import { useDailyLog, useDeleteMealEntry } from '@/presentation/hooks/useDailyLog'
 
 const MEAL_LABELS: Record<MealType, string> = {
-  breakfast: 'Breakfast',
-  lunch: 'Lunch',
-  dinner: 'Dinner',
-  snack: 'Snack',
+  breakfast: 'Desayuno',
+  lunch: 'Almuerzo',
+  dinner: 'Cena',
+  snack: 'Merienda',
 }
 
 const MEAL_ORDER: MealType[] = ['breakfast', 'lunch', 'dinner', 'snack']
@@ -51,7 +51,7 @@ export function DiaryPage() {
   const handleDelete = (entryId: number, logId: number) => {
     deleteMeal.mutate(
       { entryId, logId, date },
-      { onError: () => toast.error('Failed to delete entry') },
+      { onError: () => toast.error('No se pudo eliminar el registro') },
     )
   }
 
@@ -100,7 +100,7 @@ export function DiaryPage() {
                         <div key={entry.id} className="flex items-center justify-between py-1">
                           <div className="min-w-0 flex-1">
                             <p className="truncate text-sm">
-                              {entry.food?.name ?? `Food #${entry.food_id}`}
+                              {entry.food?.name ?? `Alimento #${entry.food_id}`}
                             </p>
                             <p className="text-xs text-muted-foreground">
                               {entry.quantity_g}g · {Math.round(entry.protein_g)}P {Math.round(entry.carbs_g)}C {Math.round(entry.fat_g)}F

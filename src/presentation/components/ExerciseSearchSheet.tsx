@@ -25,12 +25,12 @@ interface ExerciseSearchSheetProps {
 }
 
 const CATEGORIES: { value: ExerciseCategory | ''; label: string }[] = [
-  { value: '', label: 'All categories' },
+  { value: '', label: 'Todas las categorías' },
   { value: 'cardio', label: 'Cardio' },
-  { value: 'strength', label: 'Strength' },
-  { value: 'flexibility', label: 'Flexibility' },
-  { value: 'sports', label: 'Sports' },
-  { value: 'other', label: 'Other' },
+  { value: 'strength', label: 'Fuerza' },
+  { value: 'flexibility', label: 'Flexibilidad' },
+  { value: 'sports', label: 'Deportes' },
+  { value: 'other', label: 'Otro' },
 ]
 
 export function ExerciseSearchSheet({ open, onOpenChange, date }: ExerciseSearchSheetProps) {
@@ -51,10 +51,10 @@ export function ExerciseSearchSheet({ open, onOpenChange, date }: ExerciseSearch
       { exercise_id: selected.id, log_date: format(new Date(date), 'yyyy-MM-dd'), duration_minutes: mins },
       {
         onSuccess: () => {
-          toast.success(`${selected.name} logged`)
+          toast.success(`${selected.name} registrado`)
           handleClose()
         },
-        onError: () => toast.error('Failed to log exercise'),
+        onError: () => toast.error('No se pudo registrar el ejercicio'),
       },
     )
   }
@@ -73,7 +73,7 @@ export function ExerciseSearchSheet({ open, onOpenChange, date }: ExerciseSearch
     <Sheet open={open} onOpenChange={handleClose}>
       <SheetContent side="bottom" className="h-[85vh] rounded-t-2xl px-0">
         <SheetHeader className="px-4 pb-2">
-          <SheetTitle>Log Exercise</SheetTitle>
+          <SheetTitle>Registrar ejercicio</SheetTitle>
         </SheetHeader>
 
         {selected ? (
@@ -83,7 +83,7 @@ export function ExerciseSearchSheet({ open, onOpenChange, date }: ExerciseSearch
               <p className="text-xs text-muted-foreground capitalize">{selected.category} · MET {selected.met_value}</p>
             </div>
             <div>
-              <label className="text-xs text-muted-foreground">Duration (minutes)</label>
+              <label className="text-xs text-muted-foreground">Duración (minutos)</label>
               <Input
                 type="number"
                 value={duration}
@@ -94,10 +94,10 @@ export function ExerciseSearchSheet({ open, onOpenChange, date }: ExerciseSearch
             </div>
             <div className="flex gap-2">
               <Button variant="outline" className="flex-1" onClick={() => setSelected(null)}>
-                Back
+                Volver
               </Button>
               <Button className="flex-1" onClick={handleAdd} disabled={createLog.isPending}>
-                {createLog.isPending ? 'Logging...' : 'Log Exercise'}
+                {createLog.isPending ? 'Guardando...' : 'Registrar'}
               </Button>
             </div>
           </div>
@@ -107,7 +107,7 @@ export function ExerciseSearchSheet({ open, onOpenChange, date }: ExerciseSearch
               <div className="relative">
                 <Search className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
                 <Input
-                  placeholder="Search exercises..."
+                  placeholder="Buscar ejercicios..."
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   className="pl-9"
@@ -116,7 +116,7 @@ export function ExerciseSearchSheet({ open, onOpenChange, date }: ExerciseSearch
               </div>
               <Select value={category} onValueChange={(v) => setCategory(v as ExerciseCategory | '')}>
                 <SelectTrigger>
-                  <SelectValue placeholder="All categories" />
+                  <SelectValue placeholder="Todas las categorías" />
                 </SelectTrigger>
                 <SelectContent>
                   {CATEGORIES.map((c) => (
@@ -134,11 +134,11 @@ export function ExerciseSearchSheet({ open, onOpenChange, date }: ExerciseSearch
                 )}
                 {!isLoading && (query.length < 2 && !category) && (
                   <p className="py-8 text-center text-sm text-muted-foreground">
-                    Search or select a category
+                    Busca o selecciona una categoría
                   </p>
                 )}
                 {!isLoading && (query.length >= 2 || !!category) && !data?.items.length && (
-                  <p className="py-8 text-center text-sm text-muted-foreground">No exercises found</p>
+                  <p className="py-8 text-center text-sm text-muted-foreground">No se encontraron ejercicios</p>
                 )}
                 {data?.items.map((exercise) => (
                   <button

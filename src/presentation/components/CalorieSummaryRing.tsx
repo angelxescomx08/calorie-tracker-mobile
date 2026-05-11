@@ -31,21 +31,21 @@ export function CalorieSummaryRing({ consumed, goal, exerciseCalories = 0 }: Cal
         </ResponsiveContainer>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
           <span className="text-2xl font-bold">{Math.round(net)}</span>
-          <span className="text-xs text-muted-foreground">of {goal} kcal</span>
+          <span className="text-xs text-muted-foreground">de {goal} kcal</span>
         </div>
       </div>
       <div className="mt-2 flex gap-6 text-xs">
         <div className="flex flex-col items-center">
           <span className="font-semibold">{Math.round(consumed)}</span>
-          <span className="text-muted-foreground">Eaten</span>
+          <span className="text-muted-foreground">Consumido</span>
         </div>
         <div className="flex flex-col items-center">
           <span className="font-semibold text-green-600">{Math.round(exerciseCalories)}</span>
-          <span className="text-muted-foreground">Burned</span>
+          <span className="text-muted-foreground">Quemado</span>
         </div>
         <div className="flex flex-col items-center">
           <span className={`font-semibold ${isOver ? 'text-destructive' : ''}`}>{Math.round(remaining)}</span>
-          <span className="text-muted-foreground">{isOver ? 'Over' : 'Left'}</span>
+          <span className="text-muted-foreground">{isOver ? 'Excedido' : 'Restante'}</span>
         </div>
       </div>
     </div>

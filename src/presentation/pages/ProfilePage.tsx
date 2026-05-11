@@ -22,9 +22,9 @@ import { useAuth } from '@/presentation/context/AuthContext'
 import { useProfile, useUpdateProfile } from '@/presentation/hooks/useProfile'
 
 const schema = z.object({
-  birth_date: z.string().min(1, 'Required'),
+  birth_date: z.string().min(1, 'Requerido'),
   gender: z.enum(['male', 'female']),
-  height_cm: z.coerce.number().min(50, 'Invalid height').max(300),
+  height_cm: z.coerce.number().min(50, 'Altura inválida').max(300),
   activity_level: z.enum([
     'sedentary',
     'lightly_active',
@@ -36,11 +36,11 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>
 
 const ACTIVITY_LABELS: Record<ActivityLevel, string> = {
-  sedentary: 'Sedentary',
-  lightly_active: 'Lightly Active',
-  moderately_active: 'Moderately Active',
-  very_active: 'Very Active',
-  extra_active: 'Extra Active',
+  sedentary: 'Sedentario',
+  lightly_active: 'Ligeramente activo',
+  moderately_active: 'Moderadamente activo',
+  very_active: 'Muy activo',
+  extra_active: 'Extra activo',
 }
 
 export function ProfilePage() {
@@ -69,8 +69,8 @@ export function ProfilePage() {
 
   const onSubmit = (data: FormData) => {
     updateProfile.mutate(data, {
-      onSuccess: () => toast.success('Profile updated'),
-      onError: () => toast.error('Failed to update profile'),
+      onSuccess: () => toast.success('Perfil actualizado'),
+      onError: () => toast.error('No se pudo actualizar el perfil'),
     })
   }
 
@@ -92,7 +92,7 @@ export function ProfilePage() {
   return (
     <div className="flex flex-col">
       <div className="sticky top-0 z-10 bg-background/95 px-4 py-3 backdrop-blur">
-        <h2 className="text-lg font-semibold">Profile</h2>
+        <h2 className="text-lg font-semibold">Perfil</h2>
       </div>
 
       <div className="flex flex-col gap-4 p-4">
@@ -109,7 +109,7 @@ export function ProfilePage() {
         </Card>
 
         <Button variant="outline" asChild>
-          <Link to="/goals">Manage Goal</Link>
+          <Link to="/goals">Gestionar meta</Link>
         </Button>
 
         {isLoading ? (
@@ -117,37 +117,37 @@ export function ProfilePage() {
         ) : (
           <Card>
             <CardHeader className="pb-2 pt-3">
-              <CardTitle className="text-sm">Body Stats</CardTitle>
+              <CardTitle className="text-sm">Datos físicos</CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
                 <div>
-                  <Label className="text-xs">Date of Birth</Label>
+                  <Label className="text-xs">Fecha de nacimiento</Label>
                   <Input type="date" className="mt-1" {...register('birth_date')} />
                   {errors.birth_date && <p className="text-xs text-destructive">{errors.birth_date.message}</p>}
                 </div>
 
                 <div>
-                  <Label className="text-xs">Gender</Label>
+                  <Label className="text-xs">Género</Label>
                   <Select value={gender} onValueChange={(v) => setValue('gender', v as Gender)}>
                     <SelectTrigger className="mt-1">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="male">Male</SelectItem>
-                      <SelectItem value="female">Female</SelectItem>
+                      <SelectItem value="male">Masculino</SelectItem>
+                      <SelectItem value="female">Femenino</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div>
-                  <Label className="text-xs">Height (cm)</Label>
+                  <Label className="text-xs">Altura (cm)</Label>
                   <Input type="number" step="0.5" className="mt-1" {...register('height_cm')} />
                   {errors.height_cm && <p className="text-xs text-destructive">{errors.height_cm.message}</p>}
                 </div>
 
                 <div>
-                  <Label className="text-xs">Activity Level</Label>
+                  <Label className="text-xs">Nivel de actividad</Label>
                   <Select
                     value={activityLevel}
                     onValueChange={(v) => setValue('activity_level', v as ActivityLevel)}
@@ -164,7 +164,7 @@ export function ProfilePage() {
                 </div>
 
                 <Button type="submit" disabled={updateProfile.isPending}>
-                  {updateProfile.isPending ? 'Saving...' : 'Save Profile'}
+                  {updateProfile.isPending ? 'Guardando...' : 'Guardar perfil'}
                 </Button>
               </form>
             </CardContent>
@@ -172,7 +172,7 @@ export function ProfilePage() {
         )}
 
         <Button variant="destructive" onClick={handleLogout}>
-          Log Out
+          Cerrar sesión
         </Button>
       </div>
     </div>

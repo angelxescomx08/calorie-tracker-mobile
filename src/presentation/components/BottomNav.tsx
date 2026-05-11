@@ -3,11 +3,11 @@ import { BookOpen, Dumbbell, Home, TrendingUp, User } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const tabs = [
-  { to: '/', icon: Home, label: 'Home', end: true },
-  { to: '/diary', icon: BookOpen, label: 'Diary', end: false },
-  { to: '/exercise', icon: Dumbbell, label: 'Exercise', end: false },
-  { to: '/progress', icon: TrendingUp, label: 'Progress', end: false },
-  { to: '/profile', icon: User, label: 'Profile', end: false },
+  { to: '/', icon: Home, label: 'Inicio', end: true },
+  { to: '/diary', icon: BookOpen, label: 'Diario', end: false },
+  { to: '/exercise', icon: Dumbbell, label: 'Ejercicio', end: false },
+  { to: '/progress', icon: TrendingUp, label: 'Progreso', end: false },
+  { to: '/profile', icon: User, label: 'Perfil', end: false },
 ]
 
 export function BottomNav() {

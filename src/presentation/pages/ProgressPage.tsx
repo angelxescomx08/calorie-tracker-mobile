@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { format, parseISO } from 'date-fns'
+import { es } from 'date-fns/locale'
 import { Trash2, Weight } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -31,10 +32,10 @@ import {
   useWeightLogs,
 } from '@/presentation/hooks/useWeightLogs'
 
-// ── Weight ────────────────────────────────────────────────────────────────────
+// ── Peso ──────────────────────────────────────────────────────────────────────
 const weightSchema = z.object({
   logged_date: z.string().min(1),
-  weight_kg: z.coerce.number().positive('Must be positive'),
+  weight_kg: z.coerce.number().positive('Debe ser positivo'),
   notes: z.string().optional(),
 })
 type WeightForm = z.infer<typeof weightSchema>
@@ -51,8 +52,8 @@ function WeightTab() {
 
   const onSubmit = (values: WeightForm) => {
     createWeight.mutate(values, {
-      onSuccess: () => { toast.success('Weight logged'); reset({ logged_date: format(new Date(), 'yyyy-MM-dd') }) },
-      onError: () => toast.error('Failed to log weight'),
+      onSuccess: () => { toast.success('Peso registrado'); reset({ logged_date: format(new Date(), 'yyyy-MM-dd') }) },
+      onError: () => toast.error('No se pudo registrar el peso'),
     })
   }
 
@@ -72,7 +73,7 @@ function WeightTab() {
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                 <XAxis
                   dataKey="date"
-                  tickFormatter={(d) => format(parseISO(d), 'MMM d')}
+                  tickFormatter={(d) => format(parseISO(d), 'd MMM', { locale: es })}
                   tick={{ fontSize: 10 }}
                   stroke="hsl(var(--muted-foreground))"
                 />
@@ -84,8 +85,8 @@ function WeightTab() {
                 />
                 <Tooltip
                   contentStyle={{ fontSize: 12 }}
-                  formatter={(v) => typeof v === 'number' ? [`${v.toFixed(1)} kg`, 'Weight'] : ['', '']}
-                  labelFormatter={(l) => format(parseISO(String(l)), 'MMM d, yyyy')}
+                  formatter={(v) => typeof v === 'number' ? [`${v.toFixed(1)} kg`, 'Peso'] : ['', '']}
+                  labelFormatter={(l) => format(parseISO(String(l)), "d 'de' MMMM yyyy", { locale: es })}
                 />
                 <Line
                   type="monotone"
@@ -103,23 +104,23 @@ function WeightTab() {
 
       <Card>
         <CardHeader className="pb-2 pt-3">
-          <CardTitle className="text-sm">Log Weight</CardTitle>
+          <CardTitle className="text-sm">Registrar peso</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label className="text-xs">Date</Label>
+                <Label className="text-xs">Fecha</Label>
                 <Input type="date" className="mt-1" {...register('logged_date')} />
               </div>
               <div>
-                <Label className="text-xs">Weight (kg)</Label>
+                <Label className="text-xs">Peso (kg)</Label>
                 <Input type="number" step="0.1" placeholder="0.0" className="mt-1" {...register('weight_kg')} />
                 {errors.weight_kg && <p className="text-xs text-destructive">{errors.weight_kg.message}</p>}
               </div>
             </div>
             <Button type="submit" size="sm" disabled={createWeight.isPending}>
-              {createWeight.isPending ? 'Saving...' : 'Save'}
+              {createWeight.isPending ? 'Guardando...' : 'Guardar'}
             </Button>
           </form>
         </CardContent>
@@ -139,14 +140,14 @@ function WeightTab() {
                     {w.notes && <p className="text-xs text-muted-foreground">{w.notes}</p>}
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-xs text-muted-foreground">
-                      {format(parseISO(w.logged_date), 'MMM d, yyyy')}
+                    <span className="text-xs text-muted-foreground capitalize">
+                      {format(parseISO(w.logged_date), "d 'de' MMM yyyy", { locale: es })}
                     </span>
                     <Button
                       variant="ghost"
                       size="icon"
                       className="size-6 text-muted-foreground hover:text-destructive"
-                      onClick={() => deleteWeight.mutate(w.id, { onError: () => toast.error('Failed') })}
+                      onClick={() => deleteWeight.mutate(w.id, { onError: () => toast.error('Error') })}
                     >
                       <Trash2 className="size-3" />
                     </Button>
@@ -156,7 +157,7 @@ function WeightTab() {
             {!isLoading && !data?.items.length && (
               <div className="flex flex-col items-center py-8 text-center">
                 <Weight className="mb-2 size-8 text-muted-foreground/40" />
-                <p className="text-sm text-muted-foreground">No weight entries yet</p>
+                <p className="text-sm text-muted-foreground">Aún no hay registros de peso</p>
               </div>
             )}
           </div>
@@ -166,7 +167,7 @@ function WeightTab() {
   )
 }
 
-// ── Measurements ──────────────────────────────────────────────────────────────
+// ── Medidas ───────────────────────────────────────────────────────────────────
 const measureSchema = z.object({
   measured_date: z.string().min(1),
   neck_cm: z.coerce.number().positive().optional().or(z.literal('')),
@@ -195,8 +196,8 @@ function MeasurementsTab() {
         notes: values.notes || null,
       },
       {
-        onSuccess: () => { toast.success('Measurements saved'); reset({ measured_date: format(new Date(), 'yyyy-MM-dd') }) },
-        onError: () => toast.error('Failed to save'),
+        onSuccess: () => { toast.success('Medidas guardadas'); reset({ measured_date: format(new Date(), 'yyyy-MM-dd') }) },
+        onError: () => toast.error('No se pudo guardar'),
       },
     )
   }
@@ -205,19 +206,19 @@ function MeasurementsTab() {
     <div className="flex flex-col gap-4 p-4">
       <Card>
         <CardHeader className="pb-2 pt-3">
-          <CardTitle className="text-sm">Add Measurements</CardTitle>
+          <CardTitle className="text-sm">Agregar medidas</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
             <div>
-              <Label className="text-xs">Date</Label>
+              <Label className="text-xs">Fecha</Label>
               <Input type="date" className="mt-1" {...register('measured_date')} />
             </div>
             <div className="grid grid-cols-3 gap-2">
               {[
-                { key: 'neck_cm', label: 'Neck (cm)' },
-                { key: 'waist_cm', label: 'Waist (cm)' },
-                { key: 'hip_cm', label: 'Hip (cm)' },
+                { key: 'neck_cm', label: 'Cuello (cm)' },
+                { key: 'waist_cm', label: 'Cintura (cm)' },
+                { key: 'hip_cm', label: 'Cadera (cm)' },
               ].map(({ key, label }) => (
                 <div key={key}>
                   <Label className="text-xs">{label}</Label>
@@ -232,7 +233,7 @@ function MeasurementsTab() {
               ))}
             </div>
             <Button type="submit" size="sm" disabled={createM.isPending}>
-              {createM.isPending ? 'Saving...' : 'Save'}
+              {createM.isPending ? 'Guardando...' : 'Guardar'}
             </Button>
           </form>
         </CardContent>
@@ -249,15 +250,15 @@ function MeasurementsTab() {
                 <CardContent className="py-3">
                   <div className="flex items-start justify-between">
                     <div>
-                      <p className="text-xs font-medium text-muted-foreground">
-                        {format(parseISO(m.measured_date), 'MMM d, yyyy')}
+                      <p className="text-xs font-medium text-muted-foreground capitalize">
+                        {format(parseISO(m.measured_date), "d 'de' MMM yyyy", { locale: es })}
                       </p>
                       <div className="mt-1 flex flex-wrap gap-2">
-                        {m.neck_cm && <span className="text-xs">Neck: <b>{m.neck_cm}</b> cm</span>}
-                        {m.waist_cm && <span className="text-xs">Waist: <b>{m.waist_cm}</b> cm</span>}
-                        {m.hip_cm && <span className="text-xs">Hip: <b>{m.hip_cm}</b> cm</span>}
+                        {m.neck_cm && <span className="text-xs">Cuello: <b>{m.neck_cm}</b> cm</span>}
+                        {m.waist_cm && <span className="text-xs">Cintura: <b>{m.waist_cm}</b> cm</span>}
+                        {m.hip_cm && <span className="text-xs">Cadera: <b>{m.hip_cm}</b> cm</span>}
                         {m.body_fat_percentage && (
-                          <span className="text-xs">Body fat: <b>{m.body_fat_percentage.toFixed(1)}</b>%</span>
+                          <span className="text-xs">Grasa corporal: <b>{m.body_fat_percentage.toFixed(1)}</b>%</span>
                         )}
                       </div>
                     </div>
@@ -265,7 +266,7 @@ function MeasurementsTab() {
                       variant="ghost"
                       size="icon"
                       className="size-6 text-muted-foreground hover:text-destructive"
-                      onClick={() => deleteM.mutate(m.id, { onError: () => toast.error('Failed') })}
+                      onClick={() => deleteM.mutate(m.id, { onError: () => toast.error('Error') })}
                     >
                       <Trash2 className="size-3" />
                     </Button>
@@ -274,7 +275,7 @@ function MeasurementsTab() {
               </Card>
             ))}
           {!isLoading && !data?.items.length && (
-            <p className="py-8 text-center text-sm text-muted-foreground">No measurements yet</p>
+            <p className="py-8 text-center text-sm text-muted-foreground">Aún no hay medidas</p>
           )}
         </div>
       )}
@@ -282,17 +283,17 @@ function MeasurementsTab() {
   )
 }
 
-// ── Page ──────────────────────────────────────────────────────────────────────
+// ── Página ────────────────────────────────────────────────────────────────────
 export function ProgressPage() {
   return (
     <div className="flex flex-col">
       <div className="sticky top-0 z-10 bg-background/95 px-4 py-3 backdrop-blur">
-        <h2 className="text-lg font-semibold">Progress</h2>
+        <h2 className="text-lg font-semibold">Progreso</h2>
       </div>
       <Tabs defaultValue="weight" className="flex-1">
         <TabsList className="mx-4 w-[calc(100%-2rem)]">
-          <TabsTrigger value="weight" className="flex-1">Weight</TabsTrigger>
-          <TabsTrigger value="measurements" className="flex-1">Measurements</TabsTrigger>
+          <TabsTrigger value="weight" className="flex-1">Peso</TabsTrigger>
+          <TabsTrigger value="measurements" className="flex-1">Medidas</TabsTrigger>
         </TabsList>
         <TabsContent value="weight"><WeightTab /></TabsContent>
         <TabsContent value="measurements"><MeasurementsTab /></TabsContent>

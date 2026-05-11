@@ -1,107 +1,107 @@
-# Calorie Tracker Mobile — Claude Guidance
+# Calorie Tracker Mobile — Guía para Claude
 
-## Project Overview
+## Descripción del Proyecto
 
-Tauri v2 + React 19 + TypeScript mobile app for tracking calories and exercise. Connected to a REST API at `http://localhost:8080`.
+Aplicación móvil con Tauri v2 + React 19 + TypeScript para registrar calorías y ejercicios. Conectada a una API REST en `http://localhost:8080`.
 
-## Tech Stack
+## Stack Tecnológico
 
-| Layer | Technology |
-|-------|-----------|
-| Desktop shell | Tauri v2 |
-| UI framework | React 19 + TypeScript |
+| Capa | Tecnología |
+|------|-----------|
+| Shell de escritorio | Tauri v2 |
+| Framework UI | React 19 + TypeScript |
 | Build tool | Vite 7 |
-| Styling | Tailwind CSS v4 (`@tailwindcss/vite` — no `tailwind.config.js`) |
-| Component library | shadcn/ui (Radix Nova preset) |
-| Server state | React Query v5 (`@tanstack/react-query`) |
-| Routing | react-router-dom v7 |
-| HTTP client | axios with auth interceptors |
-| Forms | react-hook-form v7 + Zod v3 + @hookform/resolvers v3 |
-| Charts | recharts v3 |
-| Date utilities | date-fns v4 |
+| Estilos | Tailwind CSS v4 (`@tailwindcss/vite` — sin `tailwind.config.js`) |
+| Librería de componentes | shadcn/ui (preset Radix Nova) |
+| Estado del servidor | React Query v5 (`@tanstack/react-query`) |
+| Enrutamiento | react-router-dom v7 |
+| Cliente HTTP | axios con interceptores de auth |
+| Formularios | react-hook-form v7 + Zod v3 + @hookform/resolvers v3 |
+| Gráficas | recharts v3 |
+| Utilidades de fechas | date-fns v4 |
 
-## Development Commands
+## Comandos de Desarrollo
 
 ```bash
-# Dev server (web only)
+# Servidor de desarrollo (solo web)
 pnpm dev
 
-# TypeScript check + production build
+# Verificación TypeScript + build de producción
 pnpm build
 
-# Tauri dev (native window)
+# Tauri en modo desarrollo (ventana nativa)
 pnpm tauri dev
 
-# Tauri production build
+# Build de producción con Tauri
 pnpm tauri build
 ```
 
-## SSL Workaround (Required on This Machine)
+## Solución SSL (Requerida en Esta Máquina)
 
-This machine's Node.js does not trust the npm registry certificate. Two workarounds are required:
+El Node.js de esta máquina no confía en el certificado del registro de npm. Se necesitan dos soluciones:
 
-**For pnpm installs** — already configured globally:
+**Para instalaciones con pnpm** — ya configurado globalmente:
 ```bash
 pnpm config set strict-ssl false
 ```
 
-**For shadcn CLI commands** — prefix with `NODE_OPTIONS`:
+**Para comandos de shadcn CLI** — prefijo con `NODE_OPTIONS`:
 ```bash
 $env:NODE_OPTIONS = "--use-system-ca"
-pnpm dlx shadcn@latest add <component>
+pnpm dlx shadcn@latest add <componente>
 ```
 
-Without this, shadcn commands fail with SSL certificate errors.
+Sin esto, los comandos de shadcn fallan con errores de certificado SSL.
 
-## Architecture — Clean Architecture (4 Layers)
+## Arquitectura — Clean Architecture (4 Capas)
 
 ```
 src/
-├── domain/          # Layer 1: pure business rules, no external deps
-│   ├── entities.ts  # All TypeScript interfaces and enums
-│   └── repositories/  # Pure interfaces (contracts), 1 per resource
+├── domain/          # Capa 1: reglas de negocio puras, sin dependencias externas
+│   ├── entities.ts  # Todas las interfaces y enums de TypeScript
+│   └── repositories/  # Interfaces puras (contratos), 1 por recurso
 │
-├── application/     # Layer 2: use cases — 1 class, 1 execute() method
+├── application/     # Capa 2: casos de uso — 1 clase, 1 método execute()
 │
-├── infrastructure/  # Layer 3: concrete implementations
-│   ├── api/client.ts         # axios instance with auth + 401 interceptors
-│   └── repositories/         # Implement domain interfaces
+├── infrastructure/  # Capa 3: implementaciones concretas
+│   ├── api/client.ts         # Instancia de axios con interceptores de auth y 401
+│   └── repositories/         # Implementan las interfaces del dominio
 │
-├── di/container.ts  # Module-level singleton — wires repos + use cases
+├── di/container.ts  # Singleton a nivel de módulo — conecta repos y casos de uso
 │
-└── presentation/    # Layer 4: React
-    ├── context/AuthContext.tsx  # Auth state, localStorage, auth:logout event
-    ├── hooks/                   # React Query hooks, 1 file per resource
-    ├── layouts/                 # AuthLayout + AppLayout (bottom nav)
-    ├── components/              # Shared components
-    └── pages/                   # Route components
+└── presentation/    # Capa 4: React
+    ├── context/AuthContext.tsx  # Estado de auth, localStorage, evento auth:logout
+    ├── hooks/                   # Hooks de React Query, 1 archivo por recurso
+    ├── layouts/                 # AuthLayout + AppLayout (nav inferior)
+    ├── components/              # Componentes compartidos
+    └── pages/                   # Componentes de ruta
 ```
 
-## SOLID Principles Applied
+## Principios SOLID Aplicados
 
-| Principle | Implementation |
+| Principio | Implementación |
 |-----------|---------------|
-| **S** | `AuthRepositoryImpl` only handles HTTP — localStorage is AuthContext's responsibility |
-| **S** | Each use case has a single `execute()` method with one purpose |
-| **O** | New data source = new impl class, no changes to use cases or hooks |
-| **L** | Any `IFoodRepository` implementation can substitute another |
-| **I** | 9 small repository interfaces, not one god `IRepository` |
-| **D** | Use cases depend on `IXxxRepository` abstractions, never on concrete impls |
+| **S** | `AuthRepositoryImpl` solo maneja HTTP — localStorage es responsabilidad de AuthContext |
+| **S** | Cada caso de uso tiene un único método `execute()` con un solo propósito |
+| **O** | Nueva fuente de datos = nueva clase impl, sin cambiar casos de uso ni hooks |
+| **L** | Cualquier implementación de `IFoodRepository` puede sustituir a otra |
+| **I** | 9 interfaces pequeñas por recurso, no una `IRepository` god-object |
+| **D** | Los casos de uso dependen de `IXxxRepository` (abstracción), nunca del impl concreto |
 
-## Key Design Decisions
+## Decisiones de Diseño Clave
 
-### Auth Flow
-- Token stored in `localStorage('auth_token')`
-- On `AuthContext` mount: reads token → calls `GET /auth/me` → sets user or clears auth
-- Axios interceptor fires `window.dispatchEvent(new Event('auth:logout'))` on any 401
-- `AuthContext` listens with `useEffect` and calls `clearAuth()`
+### Flujo de Autenticación
+- Token almacenado en `localStorage('auth_token')`
+- Al montar `AuthContext`: lee el token → llama `GET /auth/me` → establece el usuario o limpia la auth
+- El interceptor de axios emite `window.dispatchEvent(new Event('auth:logout'))` en cualquier 401
+- `AuthContext` escucha ese evento con `useEffect` y llama `clearAuth()`
 
-### Data Enrichment
-The API returns only IDs in relational fields. Two repositories enrich their responses:
-- `DailyLogRepositoryImpl.getByDate()` — extracts unique `food_id`s, fetches food details via `Promise.allSettled`, builds a Map, attaches `food` object to each `MealEntry`
-- `ExerciseLogRepositoryImpl.getByDate()` — same pattern for `exercise_id` → `Exercise`
+### Enriquecimiento de Datos
+La API devuelve solo IDs en campos relacionales. Dos repositorios enriquecen sus respuestas:
+- `DailyLogRepositoryImpl.getByDate()` — extrae `food_id`s únicos, obtiene detalles de comida con `Promise.allSettled`, construye un Map y adjunta el objeto `food` a cada `MealEntry`
+- `ExerciseLogRepositoryImpl.getByDate()` — mismo patrón para `exercise_id` → `Exercise`
 
-### React Query Key Conventions
+### Convenciones de Query Keys en React Query
 ```
 ['dailyLog', date]         ['exerciseLogs', date]
 ['foods', 'search', query] ['exercises', 'search', query, category]
@@ -110,25 +110,25 @@ The API returns only IDs in relational fields. Two repositories enrich their res
 ['me']
 ```
 
-### Mobile Layout
-- Bottom nav: `fixed bottom-0 inset-x-0 z-50 h-16 border-t bg-background/95 backdrop-blur`
-- Page content: `flex-1 overflow-y-auto pb-20` (prevents bottom nav overlap)
-- Food/exercise search: `<Sheet side="bottom">` (more native-feeling than Dialog)
+### Layout Móvil
+- Nav inferior: `fixed bottom-0 inset-x-0 z-50 h-16 border-t bg-background/95 backdrop-blur`
+- Contenido de página: `flex-1 overflow-y-auto pb-20` (evita que el nav tape el contenido)
+- Búsqueda de comida/ejercicio: `<Sheet side="bottom">` (más nativo en móvil que Dialog)
 
-### Dependency Versions — Do Not Upgrade Without Care
-- **Zod must stay at v3** (`^3.23.8`) — Zod v4 is incompatible with `@hookform/resolvers` v3
-- **@hookform/resolvers must stay at v3** (`^3.10.0`) — v5+ requires Zod v4
+### Versiones de Dependencias — No Actualizar Sin Cuidado
+- **Zod debe permanecer en v3** (`^3.23.8`) — Zod v4 es incompatible con `@hookform/resolvers` v3
+- **@hookform/resolvers debe permanecer en v3** (`^3.10.0`) — v5+ requiere Zod v4
 
-## Adding New Features
+## Agregar Nuevas Funcionalidades
 
-1. Add interface to `src/domain/entities.ts` if new shape is needed
-2. Add/extend repository interface in `src/domain/repositories/`
-3. Create use case(s) in `src/application/<resource>/`
-4. Implement repository in `src/infrastructure/repositories/`
-5. Register in `src/di/container.ts`
-6. Add React Query hook in `src/presentation/hooks/`
-7. Build the page/component in `src/presentation/`
+1. Agregar interfaz en `src/domain/entities.ts` si se necesita una nueva forma
+2. Agregar/extender la interfaz de repositorio en `src/domain/repositories/`
+3. Crear caso(s) de uso en `src/application/<recurso>/`
+4. Implementar el repositorio en `src/infrastructure/repositories/`
+5. Registrar en `src/di/container.ts`
+6. Agregar hook de React Query en `src/presentation/hooks/`
+7. Construir la página/componente en `src/presentation/`
 
-## API Base URL
+## URL Base de la API
 
-`http://localhost:8080` — configured in `src/infrastructure/api/client.ts`. Change there only; all other code uses the `container` singleton.
+`http://localhost:8080` — configurada en `src/infrastructure/api/client.ts`. Cambiar solo ahí; todo el resto del código usa el singleton `container`.

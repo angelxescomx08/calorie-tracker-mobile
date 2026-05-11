@@ -10,6 +10,13 @@ import type { Food, MealType } from '@/domain/entities'
 import { useAddMealEntry } from '@/presentation/hooks/useDailyLog'
 import { useFoodSearch } from '@/presentation/hooks/useFoods'
 
+const MEAL_LABELS: Record<MealType, string> = {
+  breakfast: 'Desayuno',
+  lunch: 'Almuerzo',
+  dinner: 'Cena',
+  snack: 'Merienda',
+}
+
 interface FoodSearchSheetProps {
   open: boolean
   onOpenChange: (open: boolean) => void
@@ -34,10 +41,10 @@ export function FoodSearchSheet({ open, onOpenChange, date, mealType }: FoodSear
       { date, meal_type: mealType, food_id: selected.id, quantity_g: qty },
       {
         onSuccess: () => {
-          toast.success(`${selected.name} added to ${mealType}`)
+          toast.success(`${selected.name} agregado a ${MEAL_LABELS[mealType]}`)
           handleClose()
         },
-        onError: () => toast.error('Failed to add food'),
+        onError: () => toast.error('No se pudo agregar el alimento'),
       },
     )
   }
@@ -55,7 +62,7 @@ export function FoodSearchSheet({ open, onOpenChange, date, mealType }: FoodSear
     <Sheet open={open} onOpenChange={handleClose}>
       <SheetContent side="bottom" className="h-[85vh] rounded-t-2xl px-0">
         <SheetHeader className="px-4 pb-2">
-          <SheetTitle className="capitalize">Add to {mealType}</SheetTitle>
+          <SheetTitle>Agregar a {MEAL_LABELS[mealType]}</SheetTitle>
         </SheetHeader>
 
         {selected ? (
@@ -64,12 +71,12 @@ export function FoodSearchSheet({ open, onOpenChange, date, mealType }: FoodSear
               <p className="font-medium">{selected.name}</p>
               {selected.brand && <p className="text-xs text-muted-foreground">{selected.brand}</p>}
               <p className="mt-1 text-xs text-muted-foreground">
-                Per 100g: {selected.calories} kcal · {selected.protein_g}g P · {selected.carbs_g}g C · {selected.fat_g}g F
+                Por 100g: {selected.calories} kcal · {selected.protein_g}g P · {selected.carbs_g}g C · {selected.fat_g}g F
               </p>
             </div>
             <div className="flex items-center gap-3">
               <div className="flex-1">
-                <label className="text-xs text-muted-foreground">Quantity (grams)</label>
+                <label className="text-xs text-muted-foreground">Cantidad (gramos)</label>
                 <Input
                   type="number"
                   value={quantity}
@@ -79,7 +86,7 @@ export function FoodSearchSheet({ open, onOpenChange, date, mealType }: FoodSear
                 />
               </div>
               <div className="flex-1 rounded-lg border bg-muted/40 p-3 text-center">
-                <p className="text-xs text-muted-foreground">Calories</p>
+                <p className="text-xs text-muted-foreground">Calorías</p>
                 <p className="text-lg font-semibold">
                   {Math.round((parseFloat(quantity) || 0) * selected.calories / 100)}
                 </p>
@@ -87,10 +94,10 @@ export function FoodSearchSheet({ open, onOpenChange, date, mealType }: FoodSear
             </div>
             <div className="flex gap-2">
               <Button variant="outline" className="flex-1" onClick={() => setSelected(null)}>
-                Back
+                Volver
               </Button>
               <Button className="flex-1" onClick={handleAdd} disabled={addMeal.isPending}>
-                {addMeal.isPending ? 'Adding...' : 'Add Food'}
+                {addMeal.isPending ? 'Guardando...' : 'Agregar'}
               </Button>
             </div>
           </div>
@@ -99,7 +106,7 @@ export function FoodSearchSheet({ open, onOpenChange, date, mealType }: FoodSear
             <div className="relative px-4 pb-3">
               <Search className="absolute left-7 top-2.5 size-4 text-muted-foreground" />
               <Input
-                placeholder="Search foods..."
+                placeholder="Buscar alimentos..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 className="pl-9"
@@ -114,11 +121,11 @@ export function FoodSearchSheet({ open, onOpenChange, date, mealType }: FoodSear
                   </>
                 )}
                 {!isLoading && query.length >= 2 && !data?.items.length && (
-                  <p className="py-8 text-center text-sm text-muted-foreground">No foods found</p>
+                  <p className="py-8 text-center text-sm text-muted-foreground">No se encontraron alimentos</p>
                 )}
                 {query.length < 2 && (
                   <p className="py-8 text-center text-sm text-muted-foreground">
-                    Type at least 2 characters to search
+                    Escribe al menos 2 caracteres para buscar
                   </p>
                 )}
                 {data?.items.map((food) => (

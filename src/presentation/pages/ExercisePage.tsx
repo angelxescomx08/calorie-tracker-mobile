@@ -25,7 +25,7 @@ export function ExercisePage() {
   const handleDelete = (id: number) => {
     deleteLog.mutate(
       { id, date },
-      { onError: () => toast.error('Failed to delete exercise') },
+      { onError: () => toast.error('No se pudo eliminar el ejercicio') },
     )
   }
 
@@ -34,8 +34,8 @@ export function ExercisePage() {
       <div className="sticky top-0 z-10 bg-background/95 px-4 py-3 backdrop-blur">
         <DateNavigator date={date} onChange={setDate} />
         <div className="mt-1 flex items-center justify-between text-xs text-muted-foreground">
-          <span>Exercise log</span>
-          <span className="font-medium text-green-600">{Math.round(totalCalories)} kcal burned</span>
+          <span>Registro de ejercicios</span>
+          <span className="font-medium text-green-600">{Math.round(totalCalories)} kcal quemadas</span>
         </div>
       </div>
 
@@ -45,8 +45,8 @@ export function ExercisePage() {
         ) : data?.items.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <Flame className="mb-3 size-10 text-muted-foreground/40" />
-            <p className="text-sm text-muted-foreground">No exercises logged</p>
-            <p className="text-xs text-muted-foreground">Tap + to add an exercise session</p>
+            <p className="text-sm text-muted-foreground">Sin ejercicios registrados</p>
+            <p className="text-xs text-muted-foreground">Pulsa + para agregar un ejercicio</p>
           </div>
         ) : (
           data?.items.map((log) => (
@@ -54,11 +54,11 @@ export function ExercisePage() {
               <CardContent className="flex items-center justify-between py-3">
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-medium">
-                    {log.exercise?.name ?? `Exercise #${log.exercise_id}`}
+                    {log.exercise?.name ?? `Ejercicio #${log.exercise_id}`}
                   </p>
                   <div className="mt-0.5 flex flex-wrap gap-1.5">
                     <Badge variant="secondary" className="text-xs capitalize">
-                      {log.exercise?.category ?? 'exercise'}
+                      {log.exercise?.category ?? 'ejercicio'}
                     </Badge>
                     <span className="text-xs text-muted-foreground">{log.duration_minutes} min</span>
                     {log.distance_km && (
@@ -97,7 +97,7 @@ export function ExercisePage() {
           onClick={() => setSheetOpen(true)}
         >
           <Plus className="mr-1 size-4" />
-          Add Exercise
+          Agregar ejercicio
         </Button>
       </div>
 

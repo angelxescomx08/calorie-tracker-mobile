@@ -10,8 +10,8 @@ import { Label } from '@/components/ui/label'
 import { useAuth } from '@/presentation/context/AuthContext'
 
 const schema = z.object({
-  email: z.string().email('Invalid email'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
+  email: z.string().email('Email inválido'),
+  password: z.string().min(8, 'La contraseña debe tener al menos 8 caracteres'),
 })
 type FormData = z.infer<typeof schema>
 
@@ -30,14 +30,14 @@ export function LoginPage() {
       await login(data.email, data.password)
       navigate('/', { replace: true })
     } catch {
-      setError('Invalid email or password')
+      setError('Email o contraseña incorrectos')
     }
   }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Sign in</CardTitle>
+        <CardTitle>Iniciar sesión</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
@@ -47,21 +47,21 @@ export function LoginPage() {
             {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">Contraseña</Label>
             <Input id="password" type="password" autoComplete="current-password" {...register('password')} />
             {errors.password && <p className="text-xs text-destructive">{errors.password.message}</p>}
           </div>
           {error && <p className="text-sm text-destructive">{error}</p>}
           <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? 'Signing in...' : 'Sign in'}
+            {isSubmitting ? 'Iniciando sesión...' : 'Iniciar sesión'}
           </Button>
         </form>
       </CardContent>
       <CardFooter className="justify-center">
         <p className="text-sm text-muted-foreground">
-          No account?{' '}
+          ¿No tienes cuenta?{' '}
           <Link to="/register" className="text-primary underline-offset-4 hover:underline">
-            Create one
+            Créala aquí
           </Link>
         </p>
       </CardFooter>
