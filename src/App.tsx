@@ -1,51 +1,43 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import { invoke } from "@tauri-apps/api/core";
-import "./App.css";
+import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom'
+import { AuthProvider } from '@/presentation/context/AuthContext'
+import { AppLayout } from '@/presentation/layouts/AppLayout'
+import { AuthLayout } from '@/presentation/layouts/AuthLayout'
+import { ProtectedRoute } from '@/presentation/components/ProtectedRoute'
+import { LoginPage } from '@/presentation/pages/auth/LoginPage'
+import { RegisterPage } from '@/presentation/pages/auth/RegisterPage'
+import { DashboardPage } from '@/presentation/pages/DashboardPage'
+import { DiaryPage } from '@/presentation/pages/DiaryPage'
+import { ExercisePage } from '@/presentation/pages/ExercisePage'
+import { GoalsPage } from '@/presentation/pages/GoalsPage'
+import { ProfilePage } from '@/presentation/pages/ProfilePage'
+import { ProgressPage } from '@/presentation/pages/ProgressPage'
 
-function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
-
-  async function greet() {
-    // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    setGreetMsg(await invoke("greet", { name }));
-  }
-
+export default function App() {
   return (
-    <main className="container">
-      <h1>Welcome to Tauri + React</h1>
+    <AuthProvider>
+      <Router>
+        <Routes>
+          {/* Public routes */}
+          <Route element={<AuthLayout />}>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+          </Route>
 
-      <div className="row">
-        <a href="https://vite.dev" target="_blank">
-          <img src="/vite.svg" className="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="/tauri.svg" className="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <p>Click on the Tauri, Vite, and React logos to learn more.</p>
+          {/* Protected routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route element={<AppLayout />}>
+              <Route index element={<DashboardPage />} />
+              <Route path="/diary" element={<DiaryPage />} />
+              <Route path="/exercise" element={<ExercisePage />} />
+              <Route path="/progress" element={<ProgressPage />} />
+              <Route path="/goals" element={<GoalsPage />} />
+              <Route path="/profile" element={<ProfilePage />} />
+            </Route>
+          </Route>
 
-      <form
-        className="row"
-        onSubmit={(e) => {
-          e.preventDefault();
-          greet();
-        }}
-      >
-        <input
-          id="greet-input"
-          onChange={(e) => setName(e.currentTarget.value)}
-          placeholder="Enter a name..."
-        />
-        <button type="submit">Greet</button>
-      </form>
-      <p>{greetMsg}</p>
-    </main>
-  );
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
+  )
 }
-
-export default App;
